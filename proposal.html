@@ -1,205 +1,316 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView, Alert } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pastel-pink: #ffdae0;
+            --pastel-blue: #b4f8c8;
+            --pastel-lilac: #e2d1f9;
+            --pastel-yellow: #fbf7d5;
+            --text-color: #5d5d5d;
+            --btn-color: #ff9aa2;
+        }
 
-export default function App() {
-  const [step, setStep] = useState(1);
-  const [answers, setAnswers] = useState({
-    loveAmt: "",
-    comfort: "",
-    food: "",
-    activity: "",
-    memory: "",
-    photo: null,
-  });
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-lilac));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Changed to start to allow scrolling from top */
+            padding: 40px 0;
+            overflow-y: auto; 
+        }
 
-    if (!result.canceled) {
-      setAnswers({ ...answers, photo: result.assets[0].uri });
-    }
-  };
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            margin: auto; /* Centers the box when content is short */
+            position: relative;
+        }
 
-  const validateStep2 = () => {
-    if (!answers.loveAmt) {
-      Alert.alert("Please tell me how much 🥺");
-      return;
-    }
-    setStep(3);
-  };
+        h1, h2 {
+            font-family: 'Fredoka One', cursive;
+            color: #ff85a2;
+            margin-bottom: 1.5rem;
+        }
 
-  const generateReview = () => {
-    if (!answers.comfort || !answers.food || !answers.activity) {
-      Alert.alert("Please fill all details 💖");
-      return;
-    }
-    setStep("review");
-  };
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {step === 1 && (
-        <View>
-          <Image
-            source={{ uri: "https://www.partysuppliesindia.com/cdn/shop/products/WINNETHEPOOHANDTIGERWITHOUTSIZE-21.jpg?v=1735567814" }}
-            style={styles.sticker}
-          />
-          <Text style={styles.title}>Do you love me?</Text>
-          <TouchableOpacity style={styles.btn} onPress={() => setStep(2)}>
-            <Text style={styles.btnText}>Yes! ❤️</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        /* Input Styling */
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid var(--pastel-lilac);
+            border-radius: 10px;
+            font-family: 'Quicksand', sans-serif;
+            outline: none;
+        }
 
-      {step === 2 && (
-        <View>
-          <Text style={styles.title}>How much? 🥺</Text>
-          {[
-            "A Lottt",
-            "A lottttt moreee",
-            "More than anything in this world",
-            "You're my everything, mosttt!!",
-          ].map((item) => (
-            <TouchableOpacity
-              key={item}
-              style={styles.radio}
-              onPress={() => setAnswers({ ...answers, loveAmt: item })}
-            >
-              <Text>{item}</Text>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity style={styles.btn} onPress={validateStep2}>
-            <Text style={styles.btnText}>Next</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        /* Button Styling */
+        .btn {
+            background-color: var(--btn-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-family: 'Fredoka One', cursive;
+            transition: transform 0.2s;
+            margin: 10px;
+            display: inline-block;
+        }
 
-      {step === 3 && (
-        <View>
-          <Text style={styles.subtitle}>Quiz Time! #US</Text>
-          <TextInput style={styles.input} placeholder="Our comfort spot?" onChangeText={(v) => setAnswers({ ...answers, comfort: v })} />
-          <TextInput style={styles.input} placeholder="Go-to food place?" onChangeText={(v) => setAnswers({ ...answers, food: v })} />
-          <TextInput style={styles.input} placeholder="Fav activity?" onChangeText={(v) => setAnswers({ ...answers, activity: v })} />
-          <TextInput style={styles.textarea} multiline placeholder="Unforgettable memory?" onChangeText={(v) => setAnswers({ ...answers, memory: v })} />
+        .btn:hover {
+            transform: scale(1.05);
+        }
 
-          <TouchableOpacity style={styles.btn} onPress={pickImage}>
-            <Text style={styles.btnText}>Pick Our Cutest Photo 📸</Text>
-          </TouchableOpacity>
+        #no-btn {
+            position: relative; 
+            transition: all 0.1s ease;
+        }
 
-          {answers.photo && <Image source={{ uri: answers.photo }} style={styles.preview} />}
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
 
-          <TouchableOpacity style={styles.btn} onPress={generateReview}>
-            <Text style={styles.btnText}>Done</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        .section.active {
+            display: block;
+        }
 
-      {step === "review" && (
-        <View>
-          <Text style={styles.subtitle}>Your Answers ✨</Text>
-          <Text>Comfort Spot: {answers.comfort}</Text>
-          <Text>Food Place: {answers.food}</Text>
-          <Text>Fav Activity: {answers.activity}</Text>
-          <Text>Memory: {answers.memory}</Text>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-          <TouchableOpacity style={styles.btn} onPress={() => setStep(4)}>
-            <Text style={styles.btnText}>Proceed...</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        .radio-option {
+            background: var(--pastel-yellow);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            text-align: left;
+            display: block;
+        }
 
-      {step === 4 && (
-        <View>
-          <Text style={styles.title}>WILL YOU BE MY VALENTINE? 🌹</Text>
-          <TouchableOpacity style={styles.btn} onPress={() => setStep(5)}>
-            <Text style={styles.btnText}>YES!</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        #img-preview {
+            max-width: 100%;
+            border-radius: 15px;
+            margin-top: 15px;
+            border: 3px dashed var(--pastel-lilac);
+            display: none;
+        }
 
-      {step === 5 && (
-        <View>
-          <Text style={styles.title}>YAYYY! I Love You! 💖</Text>
-          {answers.photo && <Image source={{ uri: answers.photo }} style={styles.preview} />}
-          <Text style={styles.paragraph}>
-            I don’t just like you. I want my everyday to look like you.
-          </Text>
-        </View>
-      )}
-    </ScrollView>
-  );
-}
+        .cute-sticker {
+            width: 100px;
+            height: auto;
+            margin: 10px auto;
+            display: block;
+        }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 30,
-    backgroundColor: "#ffdae0",
-    flexGrow: 1,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 26,
-    color: "#ff85a2",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 22,
-    marginBottom: 15,
-  },
-  btn: {
-    backgroundColor: "#ff9aa2",
-    padding: 15,
-    borderRadius: 30,
-    marginVertical: 10,
-  },
-  btnText: {
-    color: "white",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 12,
-    marginVertical: 8,
-    width: 280,
-    backgroundColor: "#fff",
-  },
-  textarea: {
-    height: 80,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 12,
-    marginVertical: 8,
-    backgroundColor: "#fff",
-  },
-  sticker: {
-    width: 100,
-    height: 100,
-    alignSelf: "center",
-    marginBottom: 10,
-  },
-  preview: {
-    width: 250,
-    height: 250,
-    borderRadius: 15,
-    marginVertical: 15,
-  },
-  radio: {
-    backgroundColor: "#fbf7d5",
-    padding: 15,
-    borderRadius: 15,
-    marginVertical: 5,
-    width: 300,
-  },
-  paragraph: {
-    marginTop: 20,
-    fontSize: 16,
-    textAlign: "center",
-  },
-});
+        /* Fixed Collage Styling for Scrollability */
+.collage-placeholder {
+            width: auto; /* Takes full width of the wider container */
+            height: auto; 
+            min-height: 300px;
+            background-color: var(--pastel-pink);
+            border-radius: 15px;
+            margin: 30px 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .collage-placeholder img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+
+        .review-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+            border-left: 5px solid var(--pastel-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="step-1" class="section active">
+            <img src="https://www.partysuppliesindia.com/cdn/shop/products/WINNETHEPOOHANDTIGERWITHOUTSIZE-21.jpg?v=1735567814" alt="Cute" class="cute-sticker">
+            <h1>Do you love me?</h1>
+            <button class="btn" onclick="nextStep(2)">Yes! ❤️</button>
+            <button class="btn" id="no-btn">No 💔</button>
+        </div>
+
+        <div id="step-2" class="section">
+            <h1>How much? 🥺</h1>
+            <div class="btn-group">
+                <label class="radio-option"><input type="radio" name="love_amount" value="A Lottt"> A Lottt</label>
+                <label class="radio-option"><input type="radio" name="love_amount" value="A lottttt moreee"> A lottttt moreee</label>
+                <label class="radio-option"><input type="radio" name="love_amount" value="More than anything"> More than anything in this world</label>
+                <label class="radio-option"><input type="radio" name="love_amount" value="You're my everything"> You're my everything, mosttt!!</label>
+            </div>
+            <button class="btn" onclick="validateStep2()">Next</button>
+        </div>
+
+        <div id="step-3" class="section">
+            <img src="https://media.tenor.com/b9K-V1yC8K0AAAAi/winnie-the-pooh-pooh-bear.gif" alt="Winnie" class="cute-sticker">
+            <h2>Quiz Time! #US</h2>
+            <input type="text" id="q-comfort" placeholder="3.a Our comfort spot?">
+            <input type="text" id="q-food" placeholder="3.b Our go-to place to eat?">
+            <input type="text" id="q-activity" placeholder="3.c Our fav thing to do?">
+            <textarea id="q-memory" rows="3" placeholder="3.e Unforgettable memory?"></textarea>
+            <p style="font-weight: bold;">3.d Our cutest photo:</p>
+            <input type="file" id="q-photo" accept="image/*" onchange="previewImage(event)">
+            <img id="img-preview" alt="Preview">
+            <p id="wow-msg" style="display:none; color: #ff85a2; font-weight: bold;">WOW 😍 This is really the cutest!!</p>
+            <button class="btn" onclick="generateReview()">Done</button>
+        </div>
+
+        <div id="step-review" class="section">
+            <h2>Your Answers ✨</h2>
+            <div id="review-content"></div>
+            <button class="btn" onclick="nextStep(4)">Proceed...</button>
+        </div>
+
+        <div id="step-4" class="section">
+            <h1>You got everything right! 🏆</h1>
+            <h2 style="font-size: 1.8rem;">WILL YOU BE MY VALENTINE? 🌹</h2>
+            <button class="btn" onclick="finalSuccess()">YES!</button>
+            <button class="btn" onclick="finalSuccess()" style="transform: scale(1.1);">YES, ABSOLUTELY!</button>
+        </div>
+
+        <div id="step-5" class="section">
+            <h1>YAYYY! I Love You! 💖</h1>
+            
+            <div class="collage-placeholder">
+                <img src="C:\Users\undav\Desktop\Propose day\IMG-20250928-WA0994(1)(1).png" alt="Our Collage">
+            </div>
+            
+            <div style="text-align: left; padding: 10px;">
+                <p>Somewhere between pav bhaji and pizza, between pani puri plates that never feel enough, I started noticing how constant you are. Like pani puri itself. Situations change, moods change, but you… you stay. 💗</p>
+
+                <p>I imagine us sometimes. not having a fancy date, but just being honest, an evening with blue weather, we sitting on the agasi, thando pawan, thoda clouds, bas jharmar jharmar varsaad. And you there. Shanti thi besine… hu ane tu… khata hoie, Bolta hoie, Or sometimes, not even talking; Just being. That kind of silence that feels full, not empty.</p>
+
+                <p>You love vivah-songs, films, emotions spilling everywhere. Hum Saath Saath Hain. Hum Aapke Hain Kaun. South Indian weddings, South Indian food, and Southhhindiannnn is loveee. You carry old songs from the 20s and wear them like bangles around your soul.</p>
+
+                <p>You’re a foodie with a small tummy, a dreamer with practical feet, an artist who creates magic when given a simple craft box. You talk about dark places, but you yourself feel like warm butterscotch ice cream on a rainy night.</p>
+
+                <p>And somewhere between long drives with Achal Mehta na garba, fruit & nut Dairy Milk breaks, Gafur ghisela episodes, and that soft “hetaaa bodyyy banaayy, workout karr,” I realised something quietly terrifying and beautiful.</p>
+
+                <p>I don’t just like you.</p>
+                <p>I want my everyday to look like you.</p>
+
+                <p>I want the room with high windows and rainfall sounds.</p>
+                <p>I want the Polaroids we’ll recreate badly and love anyway.</p>
+                <p>I want gravy wala shaak, mango duets, mismatched moods, sabyasachi dreams, and Alia Bhatt energy filling random afternoons.</p>
+
+                <h2 style="text-align: center; margin: 30px 0;">WILL YOU PLEASE BE MINE???</h2>
+
+                <p style="text-align: center;">Not just for Valentine’s Day. But for the quiet meals, the loud laughs, the dreams we’ll slowly afford, and the love that stays constant—like pani puri. 💗</p>
+            </div>
+
+            <button class="btn" onclick="exportData()" style="background-color: #aec6cf; margin-top: 30px;">
+                Download Our Memories
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let answers = { loveAmt: "", comfort: "", food: "", activity: "", memory: "", photoData: "" };
+
+        function nextStep(step) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            window.scrollTo(0,0); // Reset scroll to top for new steps
+        }
+
+        const noBtn = document.getElementById('no-btn');
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('click', (e) => { e.preventDefault(); moveButton(); });
+
+        function moveButton() {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
+            noBtn.style.position = 'fixed'; 
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        }
+
+        function validateStep2() {
+            const radios = document.getElementsByName('love_amount');
+            let selected = false;
+            for (const radio of radios) { if (radio.checked) { answers.loveAmt = radio.value; selected = true; break; } }
+            if (selected) nextStep(3); else alert("Please tell me how much! 🥺");
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('img-preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+                document.getElementById('wow-msg').style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function generateReview() {
+            answers.comfort = document.getElementById('q-comfort').value;
+            answers.food = document.getElementById('q-food').value;
+            answers.activity = document.getElementById('q-activity').value;
+            answers.memory = document.getElementById('q-memory').value;
+            if(!answers.comfort || !answers.food || !answers.activity) { alert("Please fill in the details! 💖"); return; }
+            document.getElementById('review-content').innerHTML = `
+                <div class="review-card"><strong>Comfort Spot:</strong> ${answers.comfort}</div>
+                <div class="review-card"><strong>Food Place:</strong> ${answers.food}</div>
+                <div class="review-card"><strong>Fav Activity:</strong> ${answers.activity}</div>
+                <div class="review-card"><strong>Memory:</strong> ${answers.memory}</div>`;
+            nextStep('review');
+        }
+
+        function finalSuccess() { nextStep(5); }
+
+        function exportData() {
+            const csvContent = "data:text/csv;charset=utf-8,Question,Answer\n"
+                + `Love Amount,${answers.loveAmt}\nComfort Spot,${answers.comfort}\nFood Place,${answers.food}\nActivity,${answers.activity}\nMemory,${answers.memory}`;
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "our_memories.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+    </script>
+</body>
+</html>
